@@ -1,0 +1,5 @@
+denbora_project/settings.py
+.idea/
+accounts/functions.py
+media/
+*.pyc

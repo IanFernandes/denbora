@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>{{ user_data.username }}</title>
+</head>
+<body>
+    {% if user_data.avatar == None or user_data.avatar == ''%}
+        <img src="{% static 'accounts/img/logo.png' %}" width="45px" height="45px"/>
+    {% else %}
+        <img src="{{ user.avatar }}" width="45px" height="45px"/>
+    {% endif %}<br>
+    Username: {{ user_data.username }}<br>
+    First Name: {{ user_data.first_name }}<br>
+    Last Name: {{ user_data.last_name }}<br>
+    Email: {{ user_data.email }}<br>
+    Date Joined: {{ user_data.date_joined }}<br>
+    City: {{ user_data.city.name }}
+    <h3>Denboras: {{ user_data.denboras }}</h3>
+    <a href="{% url 'profiles:edit' %}">Edit Profile</a><br>
+    <a href="{% url 'accounts:user_logout' %}">Logout</a>
+</body>
+</html>
