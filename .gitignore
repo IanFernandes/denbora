@@ -2,4 +2,4 @@ denbora_project/settings.py
 .idea/
 accounts/functions.py
 *.pyc
-media/avatars/
+media/avatars/*
