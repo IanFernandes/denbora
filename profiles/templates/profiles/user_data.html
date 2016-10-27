@@ -7,9 +7,9 @@
 </head>
 <body>
     {% if user_data.avatar == None or user_data.avatar == ''%}
-        <img src="{% static 'accounts/img/logo.png' %}" width="45px" height="45px"/>
+        <img src="{% static 'accounts/img/logo.png' %}" width="150px" height="150px"/>
     {% else %}
-        <img src="{{ user.avatar }}" width="45px" height="45px"/>
+        <img src="/{{ MEDIA_URL }}{{ user.avatar }}" width="150px" height="150px"/>
     {% endif %}<br>
     Username: {{ user_data.username }}<br>
     First Name: {{ user_data.first_name }}<br>
