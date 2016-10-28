@@ -17,8 +17,26 @@
     Email: {{ user_data.email }}<br>
     Date Joined: {{ user_data.date_joined }}<br>
     City: {{ user_data.city.name }}
-    <h3>Denboras: {{ user_data.denboras }}</h3>
+    <h3>Denboras: {{ user_data.denboras }}</h3><br><br>
+    {% if user_skills %}
+        <table border="2">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Category</th>
+            </tr>
+            {% for user_skill in user_skills %}
+            <tr>
+                <td>{{ user_skill.skill.name }}</td>
+                <td>{{ user_skill.skill.desc }}</td>
+                <td>{{ user_skill.skill.category.name }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    {% endif %}
     <a href="{% url 'profiles:edit' %}">Edit Profile</a><br>
+    <a href="{% url 'profiles:add_skill' %}">Add Skill</a><br>
     <a href="{% url 'accounts:user_logout' %}">Logout</a>
 </body>
 </html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Skill</title>
+</head>
+<body>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ add_skill_form }}
+        <input type="submit" value="Add Skill">
+    </form>
+</body>
+</html>

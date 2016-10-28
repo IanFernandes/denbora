@@ -1,14 +1,18 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from profiles.forms import EditForm
+from profiles.forms import EditForm, AddSkillForm
 from profiles.models import City
 from django.http import HttpResponseRedirect, HttpResponse
 from denbora_project.settings import MEDIA_URL
+from profiles.models import Skill, SkillCategory, UserSkill
 
 
 @login_required
 def user_data(request):
-    return render(request, 'profiles/user_data.html', {'user_data': request.user, 'MEDIA_URL': MEDIA_URL})
+    userskills = request.user.userskill_set.all()
+    return render(request, 'profiles/user_data.html', {'user_data': request.user,
+                                                       'user_skills': userskills,
+                                                       'MEDIA_URL': MEDIA_URL})
 
 
 @login_required
@@ -20,11 +24,16 @@ def edit(request):
                                       'first_name': request.user.first_name,
                                       'last_name': request.user.last_name,
                                       'email': request.user.email,
-                                      'city': request.user.city.complete_location})
+                                      'city': request.user.city.complete_location,
+                                      'city_name': request.user.city.name,
+                                      'lat': request.user.city.lat,
+                                      'lon': request.user.city.lon,
+                                      'country_code': request.user.city.country_code})
+
     elif request.method == 'POST':
         edit_form = EditForm(request.POST, request.FILES)
         if edit_form.is_valid():
-            if edit_form.cleaned_data['lat'] != "" and edit_form.cleaned_data['lon'] != "":
+            if edit_form.cleaned_data['city']:
                 name = edit_form.cleaned_data['city_name']
                 lat = float(edit_form.cleaned_data['lat'])
                 lon = float(edit_form.cleaned_data['lon'])
@@ -42,7 +51,9 @@ def edit(request):
                 request.user.city = city
             else:
                 request.user.city_id = 1
-            request.user.avatar = edit_form.cleaned_data['avatar']
+
+            if edit_form.cleaned_data['avatar']:
+                request.user.avatar = edit_form.cleaned_data['avatar']
             request.user.first_name = edit_form.cleaned_data['first_name']
             request.user.last_name = edit_form.cleaned_data['last_name']
             request.user.email = edit_form.cleaned_data['email']
@@ -51,5 +62,24 @@ def edit(request):
     return render(request, 'profiles/edit.html', {'edit_form': edit_form, 'message': message})
 
 
+@login_required
 def thanks(request):
     return HttpResponse("Your data has been stored properly")
+
+
+@login_required
+def add_skill(request):
+    if request.method == 'POST':
+        add_skill_form = AddSkillForm(request.POST)
+        if add_skill_form.is_valid():
+            category = SkillCategory.objects.get(id=add_skill_form.cleaned_data['category'])
+            skill = Skill(name=add_skill_form.cleaned_data['skill_name'],
+                          category=category,
+                          desc=add_skill_form.cleaned_data['desc'])
+            skill.save()
+            user_skill = UserSkill(user=request.user,
+                                   skill=skill)
+            user_skill.save()
+    else:
+        add_skill_form = AddSkillForm()
+    return render(request, 'profiles/add_skill.html', {'add_skill_form': add_skill_form})

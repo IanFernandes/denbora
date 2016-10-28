@@ -59,8 +59,8 @@ def activate(request, data):
 
 
 def signin(request):
-    # if request.user.is_authenticated:
-    #     redireccionar a perfil de usuario
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/profiles')
     message = ""
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
