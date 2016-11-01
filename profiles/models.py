@@ -10,9 +10,15 @@ class City(models.Model):
     lat = models.FloatField(null=False)
     lon = models.FloatField(null=False)
 
+    def __str__(self):
+        return self.complete_location.encode('UTF-8')
+
 
 class SkillCategory(models.Model):
     name = models.CharField(max_length=50, null=False, default='Unknown')
+
+    def __str__(self):
+        return self.name
 
 
 class Skill(models.Model):
@@ -20,7 +26,13 @@ class Skill(models.Model):
     category = models.ForeignKey(SkillCategory)
     desc = models.TextField(null=False)
 
+    def __str__(self):
+        return self.name
+
 
 class UserSkill(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL)
     skill = models.ForeignKey(Skill)
+
+    def __str__(self):
+        return str(self.id) + ' | ' + self.user.username + ' | ' + self.skill.name

@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    url(r'^', include('search.urls', namespace='search')),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^profiles/', include('profiles.urls', namespace='profiles')),
     url(r'^admin/', admin.site.urls),

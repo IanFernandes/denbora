@@ -69,17 +69,27 @@ def thanks(request):
 
 @login_required
 def add_skill(request):
+    message = ""
     if request.method == 'POST':
         add_skill_form = AddSkillForm(request.POST)
         if add_skill_form.is_valid():
             category = SkillCategory.objects.get(id=add_skill_form.cleaned_data['category'])
-            skill = Skill(name=add_skill_form.cleaned_data['skill_name'],
-                          category=category,
-                          desc=add_skill_form.cleaned_data['desc'])
-            skill.save()
-            user_skill = UserSkill(user=request.user,
-                                   skill=skill)
-            user_skill.save()
+            skill_name = add_skill_form.cleaned_data['skill_name']
+            desc = add_skill_form.cleaned_data['desc']
+            if Skill.objects.filter(name=skill_name, category=category, desc=desc).exists():
+                skill = Skill.objects.get(name=skill_name, category=category, desc=desc)
+            else:
+                skill = Skill(name=add_skill_form.cleaned_data['skill_name'],
+                              category=category,
+                              desc=add_skill_form.cleaned_data['desc'])
+            if UserSkill.objects.filter(user=request.user, skill=skill).exists():
+                message = " This skill is already added"
+            else:
+                skill.save()
+                user_skill = UserSkill(user=request.user,
+                                       skill=skill)
+                user_skill.save()
+                return HttpResponseRedirect('/profiles')
     else:
         add_skill_form = AddSkillForm()
-    return render(request, 'profiles/add_skill.html', {'add_skill_form': add_skill_form})
+    return render(request, 'profiles/add_skill.html', {'add_skill_form': add_skill_form, 'message': message})

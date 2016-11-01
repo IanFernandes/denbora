@@ -8,3 +8,6 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, default=None)
     denboras = models.SmallIntegerField(default=0)
     city = models.ForeignKey(City, default=1)
+
+    def __str__(self):
+        return self.username
