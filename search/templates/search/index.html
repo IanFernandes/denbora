@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Welcome to Denbora</title>
+    <style>
+        .ui-helper-hidden-accessible { position: absolute; top: 200px; }
+    </style>
+</head>
+<body>
+    <form action="{% url 'search:search' %}" method="post">
+        {% csrf_token %}
+        <input class="form-control" id="autocompletar" name="skill" size="30" placeholder="What do you want to learn ?" required>
+        <input id ="skillid" name="skillid" hidden>
+        <input id="id_city" type="text" size="50" placeholder="Enter a location" autocomplete="on" runat="server" name="city" required/>
+        <input type="hidden" id="lat" name="lat" value=""/>
+        <input type="hidden" id="lon" name="lon" value=""/>
+        <input type="submit" value="Search">
+    </form>
+    {{ message }}
+</body>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+<script src="{% static 'search/js/skill_autocomplete.js' %}" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places" type="text/javascript"></script>
+<script src="{% static 'search/js/city_autocomplete.js' %}" type="text/javascript"></script>
+</html>
