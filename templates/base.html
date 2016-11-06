@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <title>{% block title %}Denbora Project{% endblock %}</title>
+    {% endblock %}
+</head>
+
+<body>
+    <div id="sidebar">
+        {% block sidebar %}
+
+        {% endblock %}
+    </div>
+
+    <div id="content">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+</body>
+{% block javascript %}
+{% endblock %}
+</html>
