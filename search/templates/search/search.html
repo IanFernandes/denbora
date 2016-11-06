@@ -1,27 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "base.html" %}
+
+{% block head %}
     {% load static %}
     <meta charset="UTF-8">
     <title>Skill Search</title>
-</head>
-<body>
-{{ search_data.skill }} |  {{ search_data.location }}<br><br>
-{% for user in user_data %}
-    {% if user.avatar == None or user.avatar == ''%}
-        <img src="{% static 'accounts/img/logo.png' %}" width="150px" height="150px"/>
+{% endblock %}
+
+{% block sidebar %}
+    {% if user.is_authenticated %}
+            <ul>
+                <li><a href="/">Index</a></li>
+                <li><a href="/profiles">{{ user.username }} | Profile</a></li>
+                <li><a href="/accounts/logout/">Logout</a></li>
+            </ul>
     {% else %}
-        <img src="/{{ MEDIA_URL }}{{ user.avatar }}" width="150px" height="150px"/>
-    {% endif %}<br>
-    username: {{ user.username }}<br>
-    first name: {{ user.first_name }}<br>
-    last name: {{ user.last_name }}<br>
-    location: {{ user.city.complete_location }}<br>
-    Denboras: {{ user.denboras }}<br>
-    Other Skills: {% for skill in user.userskill_set.all %}
-                    {{ skill.skill.name }},
-                    {% endfor %}
-    <p>______________________</p><br><br>
-{% endfor %}
-</body>
-</html>
+            <ul>
+                <li><a href="/">Index</a></li>
+                <li><a href="/accounts/signin/">Login</a></li>
+            </ul>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+   {{ search_data.skill }} |  {{ search_data.location }}<br><br>
+    {% for user in user_data %}
+        {% if user.avatar == None or user.avatar == ''%}
+            <img src="{% static 'accounts/img/logo.png' %}" width="150px" height="150px"/>
+        {% else %}
+            <img src="/{{ MEDIA_URL }}{{ user.avatar }}" width="150px" height="150px"/>
+        {% endif %}<br>
+        username: {{ user.username }}<br>
+        first name: {{ user.first_name }}<br>
+        last name: {{ user.last_name }}<br>
+        location: {{ user.city.complete_location }}<br>
+        Denboras: {{ user.denboras }}<br>
+        Other Skills: {% for skill in user.userskill_set.all %}
+                        {{ skill.skill.name }},
+                        {% endfor %}
+        <p>______________________</p><br><br>
+    {% endfor %}
+{% endblock %}

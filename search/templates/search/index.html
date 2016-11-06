@@ -1,14 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "base.html" %}
+
+{% block head %}
     {% load static %}
     <meta charset="UTF-8">
     <title>Welcome to Denbora</title>
     <style>
         .ui-helper-hidden-accessible { position: absolute; top: 200px; }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block sidebar %}
+    {% if user.is_authenticated %}
+            <ul>
+                <li><a href="/">Index</a></li>
+                <li><a href="/profiles">{{ user.username }} | Profile</a></li>
+                <li><a href="/accounts/logout/">Logout</a></li>
+            </ul>
+    {% else %}
+            <ul>
+                <li><a href="/">Index</a></li>
+                <li><a href="/accounts/signin/">Login</a></li>
+            </ul>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
     <form action="{% url 'search:search' %}" method="post">
         {% csrf_token %}
         <input class="form-control" id="autocompletar" name="skill" size="30" placeholder="What do you want to learn ?" required>
@@ -19,11 +35,13 @@
         <input type="submit" value="Search">
     </form>
     {{ message }}
-</body>
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
-<script src="{% static 'search/js/skill_autocomplete.js' %}" type="text/javascript"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places" type="text/javascript"></script>
-<script src="{% static 'search/js/city_autocomplete.js' %}" type="text/javascript"></script>
-</html>
+{% endblock %}
+
+{% block javascript %}
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="{% static 'search/js/skill_autocomplete.js' %}" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places" type="text/javascript"></script>
+    <script src="{% static 'search/js/city_autocomplete.js' %}" type="text/javascript"></script>
+{% endblock %}
