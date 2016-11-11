@@ -6,14 +6,6 @@
     <title>{{ user_data.username }}</title>
 {% endblock %}
 
-{% block sidebar %}
-    <ul>
-        <li><a href="/">Index</a></li>
-        <li><a href="/profiles">{{ user.username }} | Profile</a></li>
-        <li><a href="/accounts/logout/">Logout</a></li>
-    </ul>
-{% endblock %}
-
 {% block content %}
     {% if user_data.avatar == None or user_data.avatar == ''%}
         <img src="{% static 'accounts/img/logo.png' %}" width="150px" height="150px"/>

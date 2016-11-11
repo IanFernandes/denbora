@@ -8,9 +8,21 @@
 
 <body>
     <div id="sidebar">
-        {% block sidebar %}
-
-        {% endblock %}
+{% block sidebar %}
+    {% if user.is_authenticated %}
+            <ul>
+                <li><a href="/">Index</a></li>
+                <li><a href="/profiles">{{ user.username }} | Profile</a></li>
+                <li><a href="/messaging/inbox/">{{ message_unread }} Inbox</a></li>
+                <li><a href="/accounts/logout/">Logout</a></li>
+            </ul>
+    {% else %}
+            <ul>
+                <li><a href="/">Index</a></li>
+                <li><a href="/accounts/signin/">Login</a></li>
+            </ul>
+    {% endif %}
+{% endblock %}
     </div>
 
     <div id="content">

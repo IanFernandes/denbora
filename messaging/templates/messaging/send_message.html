@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Message</title>
+</head>
+<body>
+    <ul>
+        <li><a href="/">Index</a></li>
+        <li><a href="/profiles">{{ user.username }} | Profile</a></li>
+        <li><a href="/accounts/logout/">Logout</a></li>
+    </ul>
+    Sender: {{ user.username }}<br>
+    Receiver: {{receiver.username }}<br>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ message_form }}
+        <input type="submit" value="Send">
+    </form>
+    {{ message }}
+</body>
+</html>

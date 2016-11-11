@@ -5,14 +5,17 @@ from profiles.models import City
 from django.http import HttpResponseRedirect, HttpResponse
 from denbora_project.settings import MEDIA_URL
 from profiles.models import Skill, SkillCategory, UserSkill
+from messaging.models import Message
 
 
 @login_required
 def user_data(request):
     userskills = request.user.userskill_set.all()
+    message_unread = Message.objects.filter(receiver=request.user, read=False).count()
     return render(request, 'profiles/user_data.html', {'user_data': request.user,
                                                        'user_skills': userskills,
-                                                       'MEDIA_URL': MEDIA_URL})
+                                                       'MEDIA_URL': MEDIA_URL,
+                                                       'message_unread': message_unread})
 
 
 @login_required

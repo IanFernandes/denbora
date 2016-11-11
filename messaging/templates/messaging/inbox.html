@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inbox</title>
+</head>
+<body>
+{% for message in message_list %}
+    Sender: {{ message.sender}}<br>
+    Title: {{message.title }}<br>
+    Message: {{ message.msg_content }}<br>
+    Date: {{ message.created_at }}<br><br><br>
+{% endfor %}
+</body>
+</html>

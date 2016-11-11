@@ -6,21 +6,6 @@
     <title>Skill Search</title>
 {% endblock %}
 
-{% block sidebar %}
-    {% if user.is_authenticated %}
-            <ul>
-                <li><a href="/">Index</a></li>
-                <li><a href="/profiles">{{ user.username }} | Profile</a></li>
-                <li><a href="/accounts/logout/">Logout</a></li>
-            </ul>
-    {% else %}
-            <ul>
-                <li><a href="/">Index</a></li>
-                <li><a href="/accounts/signin/">Login</a></li>
-            </ul>
-    {% endif %}
-{% endblock %}
-
 {% block content %}
    {{ search_data.skill }} |  {{ search_data.location }}<br><br>
     {% for user in user_data %}
@@ -36,7 +21,8 @@
         Denboras: {{ user.denboras }}<br>
         Other Skills: {% for skill in user.userskill_set.all %}
                         {{ skill.skill.name }},
-                        {% endfor %}
+                        {% endfor %}<br>
+        <a href="/messaging/send_message/username={{ user.username }}">Send Message</a>
         <p>______________________</p><br><br>
     {% endfor %}
 {% endblock %}

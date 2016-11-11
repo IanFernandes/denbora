@@ -4,13 +4,22 @@ from accounts.models import User
 import json
 from django.db import connection
 from denbora_project.settings import MEDIA_URL
+from messaging.models import Message
 
 
 def index(request):
-    return render(request, 'search/index.html')
+    if request.user.is_authenticated:
+        message_unread = Message.objects.filter(receiver=request.user, read=False).count()
+    else:
+        message_unread = ""
+    return render(request, 'search/index.html', {'message_unread': message_unread})
 
 
 def search(request):
+    if request.user.is_authenticated:
+        message_unread = Message.objects.filter(receiver=request.user, read=False).count()
+    else:
+        message_unread = ""
     user_data = list()
     search_data = dict()
     if request.method == 'POST':
@@ -33,7 +42,8 @@ def search(request):
                 user_data.append(user)
     return render(request, 'search/search.html', {'user_data': user_data,
                                                   'MEDIA_URL': MEDIA_URL,
-                                                  'search_data': search_data})
+                                                  'search_data': search_data,
+                                                  'message_unread': message_unread})
 
 
 def autocomplete_skill(request):

@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^', include('search.urls', namespace='search')),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^profiles/', include('profiles.urls', namespace='profiles')),
+    url(r'^messaging/', include('messaging.urls', namespace='messaging')),
     url(r'^admin/', admin.site.urls),
 ]
 

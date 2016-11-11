@@ -20,7 +20,7 @@ def register(request):
                 email = register_form.cleaned_data['email']
                 # check if username or email exists
                 if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-                    message = "This User or Email already exists"
+                    message = "This Username or Email already exists"
                 else:
                     password = register_form.cleaned_data['password']
                     user = User.objects.create_user(username, email, password)
