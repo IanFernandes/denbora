@@ -10,6 +10,7 @@
     Title: {{message.title }}<br>
     Message: {{ message.msg_content }}<br>
     Date: {{ message.created_at }}<br><br><br>
+    <a href="/messaging/send_message/username={{ message.sender }}">Answer</a>
 {% endfor %}
 </body>
 </html>
