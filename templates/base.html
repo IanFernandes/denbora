@@ -1,36 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load staticfiles %}
+    <meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     {% block head %}
     <title>{% block title %}Denbora Project{% endblock %}</title>
     {% endblock %}
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+
+    	<!--     Fonts and icons     -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+
+    	<!-- CSS Files -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/material-kit.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/demo.css' %}" rel="stylesheet"/>
 </head>
 
-<body>
-    <div id="sidebar">
+<body class="index-page">
 {% block sidebar %}
-    {% if user.is_authenticated %}
-            <ul>
-                <li><a href="/">Index</a></li>
-                <li><a href="/profiles">{{ user.username }} | Profile</a></li>
-                <li><a href="/messaging/inbox/">{{ message_unread }} Inbox</a></li>
-                <li><a href="/accounts/logout/">Logout</a></li>
-            </ul>
-    {% else %}
-            <ul>
-                <li><a href="/">Index</a></li>
-                <li><a href="/accounts/signin/">Login</a></li>
-            </ul>
-    {% endif %}
+<nav class="navbar navbar-transparent navbar-fixed-top navbar-color-on-scroll">
+	<div class="container">
+        <div class="navbar-header">
+	    	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-index">
+	        	<span class="sr-only">Toggle navigation</span>
+	        	<span class="icon-bar"></span>
+	        	<span class="icon-bar"></span>
+	        	<span class="icon-bar"></span>
+	    	</button>
+	    	<a href="/">
+	        	<div class="logo-container">
+	                <div class="logo">
+	                    <img src="{% static 'img/logo.png' %}" alt="Denbora Logo" rel="tooltip" title="" data-placement="bottom" data-html="true">
+	                </div>
+	                <div class="brand">
+	                    Denbora Proyect
+	                </div>
+				</div>
+	      	</a>
+	    </div>
+
+	    <div class="collapse navbar-collapse" id="navigation-index">
+	    	<ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li>
+                        <a href="/messaging/inbox/"><i class="material-icons">email</i>
+                            {% if message_unread != 0 %}
+                                <span class="notification">{{ message_unread }}</span>
+                            {% endif %}
+                            <p class="hidden-lg hidden-md">Notifications</p></a>
+                    </li>
+                    <li>
+                        <a href="/profiles">
+                            <i class="material-icons">person</i>
+                            {{ user.username }}
+                        <div class="ripple-container"></div></a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <i class="material-icons">settings</i>
+                            <b class="caret"></b>
+                        <div class="ripple-container"></div></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li class="dropdown-header">Dropdown header</li>
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">One more separated link</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/accounts/logout/">
+                            <i class="material-icons">power_settings_new</i>
+                        <div class="ripple-container"></div></a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="/accounts/signin/">
+                            <i class="material-icons">hourglass_empty</i>
+                            Login
+                        <div class="ripple-container"></div></a>
+                    </li>
+                    <li>
+                        <a href="/accounts/register/"> | &nbsp; &nbsp;
+                            Register
+                        <div class="ripple-container"></div></a>
+                    </li>
+                {% endif %}
+	    	</ul>
+	    </div>
+	</div>
+</nav>
 {% endblock %}
-    </div>
 
-    <div id="content">
-        {% block content %}
+<div class="wrapper">
+    {% block header %}
 
-        {% endblock %}
+    {% endblock %}
+
+    {% block main %}
+    <div class="main main-raised">
+        <h2>Request in your Area</h2>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
     </div>
+    {% endblock %}
+    <footer class="footer">
+	    <div class="container">
+	        <div class="copyright pull-right">
+	            &copy; 2016 | Denbora Project | Ion Azcue. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="material-icons">all_inclusive</i> Developed with Django.
+	        </div>
+	    </div>
+	</footer>
+</div>
+
 </body>
-{% block javascript %}
-{% endblock %}
+    <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}" type="text/javascript"></script>
+	<script src="{% static 'js/material.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/material-kit.js' %}" type="text/javascript"></script>
+    {% block javascript %}
+    {% endblock %}
 </html>

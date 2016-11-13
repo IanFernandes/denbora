@@ -59,6 +59,7 @@ def activate(request, data):
 
 
 def signin(request):
+    next_url = ""
     if request.user.is_authenticated:
         return HttpResponseRedirect('/profiles')
     message = ""
@@ -71,14 +72,20 @@ def signin(request):
             if user is not None:
                 login(request, user)
                 # Redirect to a success page.
-                return HttpResponseRedirect('/profiles')
+                if request.POST["next_url"]:
+                    return HttpResponseRedirect(request.POST["next_url"])
+                else:
+                    return HttpResponseRedirect('/profiles')
+
             else:
                 # Return an 'invalid login' error message.
                 message = "User does not exist"
 
     else:
         login_form = LoginForm()
-    return render(request, 'accounts/login.html', {'login_form': login_form, 'message': message})
+        if 'next' in request.GET:
+            next_url = request.GET['next']
+    return render(request, 'accounts/login.html', {'login_form': login_form, 'message': message, 'next_url': next_url})
 
 
 def user_logout(request):

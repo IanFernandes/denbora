@@ -20,7 +20,7 @@ def search(request):
         message_unread = Message.objects.filter(receiver=request.user, read=False).count()
     else:
         message_unread = ""
-    user_data = list()
+    datas = list()
     search_data = dict()
     if request.method == 'POST':
         skill = Skill.objects.get(pk=request.POST['skillid'])
@@ -29,6 +29,8 @@ def search(request):
         cursor = connection.cursor()
         lat = request.POST['lat']
         lon = request.POST['lon']
+        search_data['lat'] = lat
+        search_data['lon'] = lon
         cursor.execute("""SELECT id, (
                         6371 * acos( cos( radians(%s) ) * cos( radians( lat ) ) *
                         cos( radians( lon ) - radians(%s) ) + sin( radians(%s) ) *
@@ -39,8 +41,9 @@ def search(request):
         users = User.objects.filter(city_id__in=city_ids)
         for user in users:
             if user.userskill_set.filter(skill=skill).exists():
-                user_data.append(user)
-    return render(request, 'search/search.html', {'user_data': user_data,
+                skill_data = user.userskill_set.get(skill=skill)
+                datas.append({'user': user, 'skill': skill_data})
+    return render(request, 'search/search.html', {'datas': datas,
                                                   'MEDIA_URL': MEDIA_URL,
                                                   'search_data': search_data,
                                                   'message_unread': message_unread})

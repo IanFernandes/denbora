@@ -8,6 +8,7 @@
     <form action="{% url 'accounts:signin' %}" method="post">
         {% csrf_token %}
         {{ login_form }}
+        <input type="text" name = "next_url" value="{{ next_url }}" hidden>
         <input type="submit" value="Sign In">
     </form>
     {{ message }}
