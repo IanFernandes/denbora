@@ -1,15 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-</head>
-<body>
-    <form action="/accounts/register/" method="post">
-        {% csrf_token %}
-        {{ register_form }}
-        <input type="submit" value="Register">
-    </form>
-    {{ message }}
-</body>
-</html>
+{% extends "base_accounts.html" %}
+
+{% block form %}
+<form class="form" action="/accounts/register/" method="post">
+    {% csrf_token %}
+    <div class="header header-primary text-center">
+	    <h4>{% block form_title %}Register{% endblock %}</h4>
+
+	</div>
+    <div class="content">
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="material-icons">face</i>
+            </span>
+            <div class="form-group is-empty">{{ register_form.username }}<span class="material-input"></span></div>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="material-icons">email</i>
+            </span>
+            <div class="form-group is-empty">{{ register_form.email }}<span class="material-input"></span></div>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="material-icons">lock_outline</i>
+            </span>
+            <div class="form-group is-empty">{{ register_form.password }}<span class="material-input"></span></div>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="material-icons">lock_outline</i>
+            </span>
+            <div class="form-group is-empty">{{ register_form.password_repeat }}<span class="material-input"></span></div>
+        </div>
+    </div>
+    {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                    <div class="alert alert-danger">
+                         <div class="container-fluid">
+                             <div class="alert-icon">
+                                <i class="material-icons">error_outline</i>
+                            </div>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                            </button>
+                             <b>Error:</b> {{ message }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success">
+                        <div class="container-fluid">
+                            <div class="alert-icon">
+                                <i class="material-icons">check</i>
+                            </div>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                            </button>
+                            <b>Success:</b> {{ message }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+    <input type="text" name = "next_url" value="{{ next_url }}" hidden>
+    <div class="footer text-center">
+        <input type="submit" class="btn btn-simple btn-primary btn-lg" value="Sign In">
+	</div>
+
+</form>
+{% endblock %}
+
+<!--<form action="/accounts/register/" method="post">-->
+    <!--{% csrf_token %}-->
+    <!--{{ register_form }}-->
+    <!--<input type="submit" value="Register">-->
+<!--</form>-->

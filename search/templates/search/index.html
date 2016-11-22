@@ -5,12 +5,28 @@
     <meta charset="UTF-8">
     <title>Welcome to Denbora</title>
 {% endblock %}
+
 {% block header %}
 	<div class="header header-filter" style="background-image: url('{% static 'img/sand_clock_header.jpg' %}');">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8 col-md-offset-2">
 					<div class="brand">
+						{% if messages %}
+							{% for message in messages %}
+							   <div class="alert alert-success">
+									<div class="container-fluid">
+										<div class="alert-icon">
+											<i class="material-icons">check</i>
+										</div>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true"><i class="material-icons">clear</i></span>
+										</button>
+										<b>Success:</b> {{ message }}
+									</div>
+								</div>
+							{% endfor %}
+        				{% endif %}
 						<h1>Denbora.</h1>
 						<h3>Share | your | time</h3>
 					</div>
@@ -44,18 +60,6 @@
 		</div>
 	</div>
 {% endblock %}
-<!--{% block xx %}-->
-    <!--<form action="{% url 'search:search' %}" method="post">-->
-        <!--{% csrf_token %}-->
-        <!--<input class="form-control" id="autocompletar" name="skill" size="30" placeholder="What do you want to learn ?" required>-->
-        <!--<input id ="skillid" name="skillid" hidden>-->
-        <!--<input id="id_city" type="text" size="50" placeholder="Enter a location" autocomplete="on" runat="server" name="city" required>-->
-        <!--<input type="hidden" id="lat" name="lat" value=""/>-->
-        <!--<input type="hidden" id="lon" name="lon" value=""/>-->
-        <!--<input type="submit" value="Search">-->
-    <!--</form>-->
-    <!--{{ message }}-->
-<!--{% endblock %}-->
 
 {% block javascript %}
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>

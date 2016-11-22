@@ -1,14 +1,16 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from accounts.forms import RegisterForm, LoginForm
 from accounts.models import User
 from django.core.mail import EmailMultiAlternatives
 from accounts.functions import generate_salt, unsalt
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 
 def register(request):
-    message = ""
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/profiles')
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -20,24 +22,21 @@ def register(request):
                 email = register_form.cleaned_data['email']
                 # check if username or email exists
                 if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-                    message = "This Username or Email already exists"
+                    messages.error(request, "This Username or Email already exists")
                 else:
                     password = register_form.cleaned_data['password']
                     user = User.objects.create_user(username, email, password)
                     user.is_active = False
                     user.save()
+                    messages.success(request, "Correctly registered, we send you an Email to activate your account")
                     # manage_emailing(username, email, request.META['HTTP_HOST'])
-                    return HttpResponseRedirect('/accounts/thanks/')
+                    return HttpResponseRedirect('/accounts/register/')
             else:
-                message = "Passwords do not match"
+                messages.error(request, "Passwords do not match")
     # if a GET (or any other method) we'll create a blank form
     else:
         register_form = RegisterForm()
-    return render(request, 'accounts/register.html', {'register_form': register_form, 'message': message})
-
-
-def thanks(request):
-    return HttpResponse("Correctly registered, we send you an Email to activate your account")
+    return render(request, 'accounts/register.html', {'register_form': register_form})
 
 
 def activate(request, data):
@@ -62,7 +61,6 @@ def signin(request):
     next_url = ""
     if request.user.is_authenticated:
         return HttpResponseRedirect('/profiles')
-    message = ""
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
@@ -79,19 +77,19 @@ def signin(request):
 
             else:
                 # Return an 'invalid login' error message.
-                message = "User does not exist"
-
+                messages.error(request, "User does not exist")
     else:
         login_form = LoginForm()
         if 'next' in request.GET:
             next_url = request.GET['next']
-    return render(request, 'accounts/login.html', {'login_form': login_form, 'message': message, 'next_url': next_url})
+    return render(request, 'accounts/login.html', {'login_form': login_form, 'next_url': next_url})
 
 
 def user_logout(request):
     if request.user.is_authenticated:
+        messages.success(request, "Logged out | See you soon " + request.user.username + " !")
         logout(request)
-        return HttpResponseRedirect('/accounts/logged_out/')
+        return HttpResponseRedirect('/')
     else:
         return HttpResponseRedirect('/accounts/signin/')
 

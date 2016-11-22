@@ -29,78 +29,56 @@
 {% block main %}
     <div class="main main-raised">
         <div class="row">
-				<div class="col-md-8 col-md-offset-2 text-center">
-					<h2 class="title">{{ search_data.skill }}</h2>
-					<h5 class="description">Users found near {{ search_data.location }}</h5>
-				</div>
-			</div>
-<div class="row">
-    <div class="container">
-    {% for data in datas %}
-				<div class="col-md-6">
-					<div class="card card-profile card-plain">
-						<div class="col-md-5">
-							<div class="card-image">
-								<a href="#pablo">
-									{% if data.user.avatar == None or user.avatar == ''%}
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h2 class="title">{{ search_data.skill }}</h2>
+                <h5 class="description">{% if datas %}Users {% else %} Nothing {% endif %} found near {{ search_data.location }}</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container">
+            {% for data in datas %}
+                <div class="col-md-6">
+                    <div class="card card-profile card-plain">
+                        <div class="col-md-5">
+                            <div class="card-image">
+                                <a href="#pablo">
+                                    {% if data.user.avatar == None or user.avatar == ''%}
                                         <img class="img" src="{% static 'accounts/img/logo.png' %}"/>
                                     {% else %}
                                         <img class="img" src="/{{ MEDIA_URL }}{{ data.user.avatar }}"/>
                                     {% endif %}
-								</a>
+                                </a>
                                 <div class="ripple-container"></div>
-							</div>
-						</div>
-						<div class="col-md-7">
-							<div class="content">
-								<h4 class="card-title">{{ data.user.first_name }} {{ data.user.last_name }} |
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="content">
+                                <h4 class="card-title">{{ data.user.first_name }} {{ data.user.last_name }} |
                                     <i class="material-icons">hourglass_empty</i> {{ data.user.denboras }}</h4>
-								<h6 class="category text-muted">{{ data.user.username }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <h6 class="category text-muted">{{ data.user.username }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <a class="label label-info" href="/messaging/send_message/username={{ data.user.username }}">Send Email</a></h6>
 
-								<p class="card-description">
-									{{ data.skill.skill.desc }}
-								</p>
                                 <p class="card-description">
-									<i class="material-icons">place</i>{{ data.user.city.complete_location }}
-								</p>
-								<div class="footer">
-									<a href="#pablo" class="btn btn-just-icon btn-simple btn-twitter"><i class="fa fa-twitter"></i></a>
-									<a href="#pablo" class="btn btn-just-icon btn-simple btn-facebook"><i class="fa fa-facebook-square"></i></a>
-									<a href="#pablo" class="btn btn-just-icon btn-simple btn-google"><i class="fa fa-google"></i></a>
-								</div>
-							</div>
-						</div>
-					</div>
-
-				</div>
-    {% endfor %}
+                                    {{ data.skill.skill.desc }}
+                                </p>
+                                <p class="card-description">
+                                    <i class="material-icons">place</i>{{ data.user.city.complete_location }}
+                                </p>
+                                <div class="footer">
+                                    <a href="#pablo" class="btn btn-just-icon btn-simple btn-twitter"><i class="fa fa-twitter"></i></a>
+                                    <a href="#pablo" class="btn btn-just-icon btn-simple btn-facebook"><i class="fa fa-facebook-square"></i></a>
+                                    <a href="#pablo" class="btn btn-just-icon btn-simple btn-google"><i class="fa fa-google"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
         </div>
-			</div>
     </div>
 {% endblock %}
-<!--{% block content %}-->
-   <!--{{ search_data.skill }} |  {{ search_data.location }}<br><br>-->
-    <!--{% for user in user_data %}-->
-        <!--{% if user.avatar == None or user.avatar == ''%}-->
-            <!--<img src="{% static 'accounts/img/logo.png' %}" width="150px" height="150px"/>-->
-        <!--{% else %}-->
-            <!--<img src="/{{ MEDIA_URL }}{{ user.avatar }}" width="150px" height="150px"/>-->
-        <!--{% endif %}<br>-->
-        <!--username: {{ user.username }}<br>-->
-        <!--first name: {{ user.first_name }}<br>-->
-        <!--last name: {{ user.last_name }}<br>-->
-        <!--location: {{ user.city.complete_location }}<br>-->
-        <!--Denboras: {{ user.denboras }}<br>-->
-        <!--Other Skills: {% for skill in user.userskill_set.all %}-->
-                        <!--{{ skill.skill.name }},-->
-                        <!--{% endfor %}<br>-->
-        <!--<a href="/messaging/send_message/username={{ user.username }}">Send Message</a>-->
-        <!--<p>______________________</p><br><br>-->
-    <!--{% endfor %}-->
-<!--{% endblock %}-->
 
-<!--# OCULTAR API KEY !!-->
 {% block javascript %}
     <script>
       function initMap() {
@@ -115,5 +93,7 @@
         });
       }
     </script>
-
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfuLqLFDmbHcPtArHADGHUhiOGdXfjHhI&callback=initMap">
+    </script>
 {% endblock %}
