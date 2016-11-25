@@ -16,8 +16,8 @@ class EditForm(forms.Form):
 
 
 class AddSkillForm(forms.Form):
-    skill_name = forms.CharField(max_length=100)
+    skill_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
     categories_object = SkillCategory.objects.all()
     category_choices = [(i.id, i.name) for i in categories_object]
-    category = forms.ChoiceField(widget=forms.Select, choices=category_choices)
-    desc = forms.CharField(widget=forms.Textarea)
+    category = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}), choices=category_choices)
+    desc = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
