@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from profiles.forms import EditForm, AddSkillForm
 from profiles.models import City
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from denbora_project.settings import MEDIA_URL
 from profiles.models import Skill, SkillCategory, UserSkill
 from messaging.models import Message

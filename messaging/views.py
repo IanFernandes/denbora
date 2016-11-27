@@ -1,46 +1,65 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from accounts.models import User
-from messaging.forms import MessageForm
 from messaging.models import Message
 import datetime
+from django.db.models import Q
+from denbora_project.settings import MEDIA_URL
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib import messages
 
 
 @login_required
-def send_message(request, username):
-    message_form = {}
-    receiver = get_object_or_404(User, username=username)
-    if request.method == 'GET':
-        message_form = MessageForm()
-    elif request.method == 'POST':
-        message_form = MessageForm(request.POST, request.FILES)
-        if message_form.is_valid():
+def send_message(request):
+    if request.POST.get('receiver') == "":
+        messages.error(request, "Select a conversation, please")
+        return HttpResponseRedirect('/messaging/inbox/')
+    else:
+        receiver = get_object_or_404(User, username=request.POST.get('receiver'))
+        if request.method == 'POST':
             message = Message(sender=request.user,
                               receiver=receiver,
-                              title=message_form.cleaned_data['title'],
-                              msg_content=message_form.cleaned_data['msg_content'],
+                              msg_content=request.POST.get('msg_content'),
                               created_at=datetime.datetime.now())
             message.save()
-            return HttpResponseRedirect('/messaging/email_sent/')
-    return render(request, 'messaging/send_message.html', {'receiver': receiver,
-                                                           'message_form': message_form})
-
-
-@login_required
-def email_sent(request):
-    return HttpResponse("Your message has been sent")
+            messages.success(request, "Your message has been sent")
+            return HttpResponseRedirect('/messaging/inbox/')
+        else:
+            return HttpResponseRedirect('/messaging/inbox/')
 
 
 @login_required
 def inbox(request):
-    message_list = Message.objects.filter(receiver=request.user)
+    message_list = Message.objects.filter(Q(receiver=request.user) | Q(sender=request.user))
+    user_conversations = set()
     for message in message_list:
+        user_conversations.add(message.receiver)
+        user_conversations.add(message.sender)
         message.read = True
         message.save()
-    return render(request, 'messaging/inbox.html', {'message_list': message_list})
+    user_conversations.remove(request.user)
+    user_last = dict()
+    for user in user_conversations:
+        last_message = Message.objects.filter((Q(receiver=request.user) & Q(sender=user)) | (Q(receiver=user) & Q(sender=request.user))).order_by('-created_at')[0]
+        user_last[user] = last_message
+    return render(request, 'messaging/inbox.html', {'user_last': user_last,
+                                                    'MEDIA_URL': MEDIA_URL})
 
 
 @login_required
-def sent_box(request):
-    message_list = Message.objects.filter(sender=request.user)
-    return render(request, 'messaging/sent_box.html', {'message_list': message_list})
+def show_messages(request):
+    if request.is_ajax():
+        username = request.GET.get('user')
+        user = get_object_or_404(User, username=username)
+        conversation = Message.objects.filter(
+            (Q(receiver=request.user) & Q(sender=user)) | (Q(receiver=user) & Q(sender=request.user))).order_by(
+            '-created_at')
+        messages = list()
+        for message in conversation:
+            if message.sender == request.user:
+                messages.append({"user": "me", "message": message.msg_content, "created_at": message.created_at})
+            else:
+                messages.append({"user": "you", "message": message.msg_content, "created_at": message.created_at})
+        return HttpResponse(json.dumps(messages, cls=DjangoJSONEncoder), content_type='application/json')
+

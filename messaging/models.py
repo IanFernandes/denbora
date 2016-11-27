@@ -11,3 +11,6 @@ class Message(models.Model):
     msg_content = models.TextField(null=False)
     created_at = models.DateTimeField()
     read = models.BooleanField(default=False)  # When receiver reads the message
+
+    def __str__(self):
+        return self.msg_content
