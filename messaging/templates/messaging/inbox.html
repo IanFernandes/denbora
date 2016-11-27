@@ -54,7 +54,7 @@ p.me{
     font-weight: normal;
     font-size: 14px;
     background-color: #cfedfb;
-    padding: 24px 10px;
+    padding: 13px 10px;
     white-space: pre-line;
     word-wrap: break-word;
     border-radius: 8px;
@@ -68,7 +68,7 @@ p.you{
     font-weight: normal;
     font-size: 14px;
     background-color: rgb(176, 255, 166);
-    padding: 24px 10px;
+    padding: 13px 10px;
     white-space: pre-line;
     word-wrap: break-word;
     border-radius: 8px;
@@ -80,7 +80,7 @@ p.you{
     </style>
 </head>
 
-<body class="index-page">
+<body class="index-page" rel="{{ user_last.0.1.user.username }}">
     <nav class="navbar navbar-transparent navbar-fixed-top navbar-color-on-scroll">
         <div class="container">
             <div class="navbar-header">
@@ -160,17 +160,17 @@ p.you{
             <div class="container">
                 <div class="row">
                     <div class="col-md-4" style="overflow-y: scroll; height:500px;">
-                        {% for user, message in user_last.items %}
-                            <div class="media" rel="{{ user.username }}">
+                        {% for items in user_last %}
+                            <div class="media" rel="{{ items.1.user.username }}">
                                 <div class="pull-left">
                                     <div class="avatar">
-                                        <img class="media-object" src="/{{ MEDIA_URL }}{{ user.avatar }}" alt="user_avatar">
+                                        <img class="media-object" src="/{{ MEDIA_URL }}{{ items.1.user.avatar }}" alt="user_avatar">
                                     </div>
                                 </div>
                                 <div class="media-body">
-                                    <h4 class="media-heading">{{ user.username }}<small> · {{ message.created_at|timesince }}</small></h4>
+                                    <h4 class="media-heading">{{ items.1.user.username }}<small> · {{ items.1.message.created_at|timesince }}</small></h4>
                                     <h6 class="text-muted"></h6>
-                                    <p>{{ message.msg_content }}</p>
+                                    <p>{{ items.1.message.msg_content }}</p>
                                 </div>
                             </div>
                         {% endfor %}
@@ -242,14 +242,14 @@ p.you{
             });
           });
         });
+    $('.container').ready(function() {
+        var username = $('.index-page').attr('rel');
+        $.get('/messaging/show_messages/', {user: username}, function(messages) {
+                $(".messages_container").empty();
+                $(".receiver").val(username);
+                $.each( messages, function( key, value ) {
+                    $(".messages_container").append("<p class='"+value.user+"'>"+value.message+"</p>");
+                });
+            });
+        });
 </script>
-
-<!--{% for message in message_list %}-->
-<!--<div class="pinched">-->
-    <!--Sender: {{ message.sender}}<br>-->
-    <!--Title: {{message.title }}<br>-->
-    <!--Message: {{ message.msg_content }}<br>-->
-    <!--Date: {{ message.created_at }}<br><br><br>-->
-    <!--</div>-->
-    <!--<a href="/messaging/send_message/username={{ message.sender }}">Answer</a>-->
-<!--{% endfor %}-->

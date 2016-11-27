@@ -42,7 +42,8 @@ def inbox(request):
     user_last = dict()
     for user in user_conversations:
         last_message = Message.objects.filter((Q(receiver=request.user) & Q(sender=user)) | (Q(receiver=user) & Q(sender=request.user))).order_by('-created_at')[0]
-        user_last[user] = last_message
+        user_last[last_message.created_at] = {"user": user, "message": last_message}
+    user_last = sorted(user_last.items(), key=lambda t: t[0], reverse=True)
     return render(request, 'messaging/inbox.html', {'user_last': user_last,
                                                     'MEDIA_URL': MEDIA_URL})
 
