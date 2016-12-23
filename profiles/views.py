@@ -50,9 +50,9 @@ def add_skill(request):
                 skill = Skill(name=add_skill_form.cleaned_data['skill_name'],
                               category=category,
                               desc=add_skill_form.cleaned_data['desc'])
+
             if UserSkill.objects.filter(user=request.user, skill=skill).exists():
                 messages.error(request, "This skill is already added")
-
             else:
                 skill.save()
                 user_skill = UserSkill(user=request.user,

@@ -2,8 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from accounts.forms import RegisterForm, LoginForm
 from accounts.models import User
-from django.core.mail import EmailMultiAlternatives
-from accounts.functions import generate_salt, unsalt
+from accounts.functions import unsalt, manage_emailing
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -29,7 +28,7 @@ def register(request):
                     user.is_active = False
                     user.save()
                     messages.success(request, "Correctly registered, we send you an Email to activate your account")
-                    # manage_emailing(username, email, request.META['HTTP_HOST'])
+                    manage_emailing(username, email, request.META['HTTP_HOST'])
                     return HttpResponseRedirect('/accounts/register/')
             else:
                 messages.error(request, "Passwords do not match")
@@ -49,12 +48,14 @@ def activate(request, data):
         if not user.is_active:
             user.is_active = True
             user.save()
-            message = username + ", your account has been activated"
+            messages.success(request, username + ", your account has been activated")
+            return HttpResponseRedirect('/profiles/')
         else:
-            message = username + ", your account is already activated !"
+            messages.success(request, username + ", your account is already activated !")
+            return HttpResponseRedirect('/profiles/')
     else:
-        message = "This url is not valid"
-    return render(request, 'accounts/activate.html', {'message': message})
+        messages.error(request, "This url is not valid")
+        return HttpResponseRedirect('/accounts/signin/')
 
 
 def signin(request):
@@ -96,20 +97,4 @@ def user_logout(request):
 
 def logged_out(request):
     return render(request, 'accounts/logout.html')
-
-
-def manage_emailing(username, email, host):
-    host = "http://" + host
-    logo_url = "http://cdn.mysitemyway.com/etc-mysitemyway/icons/legacy-previews/icons-256/glossy-black-icons-business/080807-glossy-black-icon-business-hourglass.png"
-    data = generate_salt(username)
-    subject, from_email, to = 'Activate your account', 'jonazkue.f@gmail.com', email
-    text_content = 'Welcome to Denbora.'
-    html_content = '<img src="' + logo_url + '" width="42" height="42">' \
-                    '<h2>Denbora</h2>' \
-                    '<p>Welcome to Denbora ' + username + '</p>' \
-                    '<a href="' + host + '/accounts/activate/q=' + data + '"> Click Here to activate you account</a>' \
-                    '<p>Thank You</p>'
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
 
