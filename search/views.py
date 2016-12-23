@@ -1,10 +1,12 @@
-from django.shortcuts import render, HttpResponse
-from profiles.models import Skill
-from accounts.models import User
 import json
-from django.db import connection
+
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from denbora_project.settings import MEDIA_URL
 from messaging.models import Message
+from profiles.models import Skill
+from search.service import get_users, load_search_data
 
 
 def index(request):
@@ -16,37 +18,24 @@ def index(request):
 
 
 def search(request):
-    if request.user.is_authenticated:
-        message_unread = Message.objects.filter(receiver=request.user, read=False).count()
-    else:
-        message_unread = ""
-    datas = list()
-    search_data = dict()
     if request.method == 'POST':
-        skill = Skill.objects.get(pk=request.POST['skillid'])
-        search_data['skill'] = skill.name
-        search_data['location'] = request.POST['city']
-        cursor = connection.cursor()
-        lat = request.POST['lat']
-        lon = request.POST['lon']
-        search_data['lat'] = lat
-        search_data['lon'] = lon
-        cursor.execute("""SELECT id, (
-                        6371 * acos( cos( radians(%s) ) * cos( radians( lat ) ) *
-                        cos( radians( lon ) - radians(%s) ) + sin( radians(%s) ) *
-                        sin( radians( lat ) ) ) )
-                        AS distance FROM profiles_city HAVING distance < 25
-                        ORDER BY distance LIMIT 0 , 20;""", (lat, lon, lat))
-        city_ids = [row[0] for row in cursor.fetchall()]
-        users = User.objects.filter(city_id__in=city_ids)
-        for user in users:
-            if user.userskill_set.filter(skill=skill).exists():
-                skill_data = user.userskill_set.get(skill=skill)
-                datas.append({'user': user, 'skill': skill_data})
-    return render(request, 'search/search.html', {'datas': datas,
-                                                  'MEDIA_URL': MEDIA_URL,
-                                                  'search_data': search_data,
-                                                  'message_unread': message_unread})
+        try:
+            skill = Skill.objects.get(name=request.POST['skill'])
+        except ObjectDoesNotExist:
+            messages.info(request, request.POST['skill'] + " Skill does not Exist")
+            return HttpResponseRedirect('/')
+        search_data = load_search_data(request.POST)
+        users_data = get_users(request.POST['lat'], request.POST['lon'], skill)
+        if request.user.is_authenticated:
+            message_unread = Message.objects.filter(receiver=request.user, read=False).count()
+        else:
+            message_unread = ""
+        return render(request, 'search/search.html', {'datas': users_data,
+                                                      'MEDIA_URL': MEDIA_URL,
+                                                      'search_data': search_data,
+                                                      'message_unread': message_unread})
+    else:
+        return HttpResponseRedirect('/')
 
 
 def autocomplete_skill(request):

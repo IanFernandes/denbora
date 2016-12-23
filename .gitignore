@@ -3,3 +3,4 @@ denbora_project/settings.py
 accounts/functions.py
 *.pyc
 media/avatars/*
+*/migrations/0*

@@ -173,8 +173,12 @@
                                 {% endfor %}
                             {% endif %}
                                 <h2 class="title">About Me:</h2>
-                                 <h5 class="card-description">{{ user.description }}</h5><br><br>
-                                  {% if user_skills %}
+                                {% if user.description %}
+                                    <h5 class="card-description">{{ user.description }}</h5><br><br>
+                                {% else %}
+                                    <h6 class="card-description">We don't know nothing about you please, <a href="/profiles/edit">Complete your porfile</a></h6><br><br>
+                                {% endif %}
+                                {% if user_skills %}
                                  <div class="cardiff">
                                  <div class="card-header" data-background-color="purple">
 	                                <h4>User Skills</h4>
@@ -198,7 +202,7 @@
 	                                    </tbody>
 	                                </table>
                                      {% else %}
-                                     <p>No skill Added</p><a href="{% url 'profiles:add_skill' %}">Add Skill</a>
+                                     <h6><a href="{% url 'profiles:add_skill' %}">Add some Skills</a> to let people know about you habilities</h6>
                                      {% endif %}
 	                            </div>
                                      </div>
