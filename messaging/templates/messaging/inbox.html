@@ -107,9 +107,6 @@ p.you{
                     {% if user.is_authenticated %}
                         <li>
                             <a href="/messaging/inbox/"><i class="material-icons">email</i>
-                                {% if message_unread != 0 %}
-                                    <span class="notification">{{ message_unread }}</span>
-                                {% endif %}
                                 <p class="hidden-lg hidden-md">Notifications</p></a>
                         </li>
                         <li>
@@ -160,25 +157,28 @@ p.you{
             <div class="container">
                 <div class="row">
                     <div class="col-md-4" style="overflow-y: scroll; height:500px;">
-                        {% for items in user_last %}
-                            <div class="media" rel="{{ items.1.user.username }}">
-                                <div class="pull-left">
-                                    <div class="avatar">
-                                        <img class="media-object" src="/{{ MEDIA_URL }}{{ items.1.user.avatar }}" alt="user_avatar">
+                        {% if user_last %}
+                            {% for items in user_last %}
+                                <div class="media" rel="{{ items.1.user.username }}">
+                                    <div class="pull-left">
+                                        <div class="avatar">
+                                            <img class="media-object" src="/{{ MEDIA_URL }}{{ items.1.user.avatar }}" alt="user_avatar">
+                                        </div>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">{{ items.1.user.username }}<small> · {{ items.1.message.created_at|timesince }}</small></h4>
+                                        <h6 class="text-muted"></h6>
+                                        <p>{{ items.1.message.msg_content }}</p>
                                     </div>
                                 </div>
-                                <div class="media-body">
-                                    <h4 class="media-heading">{{ items.1.user.username }}<small> · {{ items.1.message.created_at|timesince }}</small></h4>
-                                    <h6 class="text-muted"></h6>
-                                    <p>{{ items.1.message.msg_content }}</p>
-                                </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <h3>No active chats, please, find users <a href="/">here</a></h3>
+                        {% endif %}
                     </div>
                     <div class="col-md-8">
                         <div class="messages_container" style="overflow-y: scroll; height:500px; padding-top:30px; display: flex;
   flex-direction: column-reverse;">
-
                         </div>
                             {% if messages %}
             {% for message in messages %}
@@ -209,14 +209,10 @@ p.you{
                 {% endif %}
             {% endfor %}
     {% endif %}
-                        <form action="/messaging/send_message/" method="post">
-                            {% csrf_token %}
-                            <textarea rows="4" cols="50" placeholder="Answer..." class="form-control" name="msg_content" required></textarea>
-                            <input type="text" name="receiver" class="receiver" hidden>
-                            <input type="submit" value="Send Message">
-					    </form>
+                        <textarea rows="4" cols="50" placeholder="Answer..." class="form-control" name="msg_content" id="message"></textarea>
+                        <input type="text" name="receiver" class="receiver" hidden>
+                        <input type="button" value="Send Message" id="send_message">
                     </div>
-
                 </div>
             </div>
         </div>
@@ -240,16 +236,57 @@ p.you{
                     $(".messages_container").append("<p class='"+value.user+"'>"+value.message+"</p>");
                 });
             });
-          });
         });
+
+        $('#send_message').click(function() {
+            var receiver = $(".receiver").val();
+            var msg = $("#message").val();
+            $.get('/messaging/send_message/', {receiver: receiver, msg: msg}, function(response) {
+                if( response == "success") {
+                    $.get('/messaging/show_messages/', {user: receiver}, function(messages) {
+                        $(".messages_container").empty();
+                        $("#message").val('');
+                        $(".receiver").val(receiver);
+                        $.each( messages, function( key, value ) {
+                            $(".messages_container").append("<p class='"+value.user+"'>"+value.message+"</p>");
+                        });
+                    });
+                } else {
+                    alert("Error sending message");
+                }
+            });
+        });
+
+        $("#message").keypress(function(e) {
+            if(e.which == 13) {
+                var receiver = $(".receiver").val();
+                var msg = $("#message").val();
+                $.get('/messaging/send_message/', {receiver: receiver, msg: msg}, function(response) {
+                    if( response == "success") {
+                        $.get('/messaging/show_messages/', {user: receiver}, function(messages) {
+                            $(".messages_container").empty();
+                            $("#message").val('');
+                            $(".receiver").val(receiver);
+                            $.each( messages, function( key, value ) {
+                                $(".messages_container").append("<p class='"+value.user+"'>"+value.message+"</p>");
+                            });
+                        });
+                    } else {
+                        alert("Error sending message");
+                    }
+                });
+            }
+        });
+    });
+
     $('.container').ready(function() {
         var username = $('.index-page').attr('rel');
         $.get('/messaging/show_messages/', {user: username}, function(messages) {
-                $(".messages_container").empty();
-                $(".receiver").val(username);
-                $.each( messages, function( key, value ) {
-                    $(".messages_container").append("<p class='"+value.user+"'>"+value.message+"</p>");
-                });
+            $(".messages_container").empty();
+            $(".receiver").val(username);
+            $.each( messages, function( key, value ) {
+                $(".messages_container").append("<p class='"+value.user+"'>"+value.message+"</p>");
             });
         });
+    });
 </script>

@@ -12,37 +12,42 @@ from django.contrib import messages
 
 @login_required
 def send_message(request):
-    if request.POST.get('receiver') == "":
-        messages.error(request, "Select a conversation, please")
-        return HttpResponseRedirect('/messaging/inbox/')
-    else:
-        receiver = get_object_or_404(User, username=request.POST.get('receiver'))
-        if request.method == 'POST':
-            message = Message(sender=request.user,
-                              receiver=receiver,
-                              msg_content=request.POST.get('msg_content'),
-                              created_at=datetime.datetime.now())
-            message.save()
-            messages.success(request, "Your message has been sent")
+    if request.is_ajax():
+        if request.GET.get('receiver') == "":
+            messages.error(request, "Select a conversation, please")
             return HttpResponseRedirect('/messaging/inbox/')
         else:
-            return HttpResponseRedirect('/messaging/inbox/')
+            receiver = get_object_or_404(User, username=request.GET.get('receiver'))
+            if request.method == 'GET':
+                message = Message(sender=request.user,
+                                  receiver=receiver,
+                                  msg_content=request.GET.get('msg'),
+                                  created_at=datetime.datetime.now())
+                message.save()
+                return HttpResponse(json.dumps("success", cls=DjangoJSONEncoder), content_type='application/json')
+    else:
+        return HttpResponseRedirect('/messaging/inbox/')
 
 
 @login_required
 def inbox(request):
-    message_list = Message.objects.filter(Q(receiver=request.user) | Q(sender=request.user))
-    user_conversations = set()
-    for message in message_list:
-        user_conversations.add(message.receiver)
-        user_conversations.add(message.sender)
-        message.read = True
-        message.save()
-    user_conversations.remove(request.user)
     user_last = dict()
-    for user in user_conversations:
-        last_message = Message.objects.filter((Q(receiver=request.user) & Q(sender=user)) | (Q(receiver=user) & Q(sender=request.user))).order_by('-created_at')[0]
-        user_last[last_message.created_at] = {"user": user, "message": last_message}
+    if request.method == 'POST':
+        if request.POST.get('username'):
+            add_user = get_object_or_404(User, username=request.POST.get('username'))
+            user_last[datetime.datetime.now()] = {"user": add_user, "message": ""}
+    message_list = Message.objects.filter(Q(receiver=request.user) | Q(sender=request.user))
+    if message_list:
+        user_conversations = set()
+        for message in message_list:
+            user_conversations.add(message.receiver)
+            user_conversations.add(message.sender)
+            message.read = True
+            message.save()
+        user_conversations.remove(request.user)
+        for user in user_conversations:
+            last_message = Message.objects.filter((Q(receiver=request.user) & Q(sender=user)) | (Q(receiver=user) & Q(sender=request.user))).order_by('-created_at')[0]
+            user_last[last_message.created_at] = {"user": user, "message": last_message}
     user_last = sorted(user_last.items(), key=lambda t: t[0], reverse=True)
     return render(request, 'messaging/inbox.html', {'user_last': user_last,
                                                     'MEDIA_URL': MEDIA_URL})
@@ -55,7 +60,7 @@ def show_messages(request):
         user = get_object_or_404(User, username=username)
         conversation = Message.objects.filter(
             (Q(receiver=request.user) & Q(sender=user)) | (Q(receiver=user) & Q(sender=request.user))).order_by(
-            '-created_at')
+            '-created_at')[:50]
         messages = list()
         for message in conversation:
             if message.sender == request.user:

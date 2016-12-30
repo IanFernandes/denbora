@@ -42,7 +42,7 @@
                         <div class="col-md-5">
                             <div class="card-image">
                                 <a href="#pablo">
-                                    {% if data.user.avatar == None or user.avatar == ''%}
+                                    {% if data.user.avatar == None or data.user.avatar == ''%}
                                         <img class="img" src="{% static 'accounts/img/logo.png' %}"/>
                                     {% else %}
                                         <img class="img" src="/{{ MEDIA_URL }}{{ data.user.avatar }}"/>
@@ -56,7 +56,12 @@
                                 <h4 class="card-title">{{ data.user.first_name }} {{ data.user.last_name }} |
                                     <i class="material-icons">hourglass_empty</i> {{ data.user.denboras }}</h4>
                                 <h6 class="category text-muted">{{ data.user.username }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <a class="label label-info" href="/messaging/send_message/username={{ data.user.username }}">Send Message</a></h6>
+                                    <form action="/messaging/inbox/" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="username" value="{{ data.user.username}}">
+                                        <button type="submit" class="label label-info">Send Message</button>
+                                    </form>
+                                </h6>
 
                                 <p class="card-description">
                                     {{ data.skill.skill.desc }}
